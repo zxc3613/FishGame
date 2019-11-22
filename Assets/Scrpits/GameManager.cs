@@ -8,12 +8,16 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] Text scoreText;
     [SerializeField] Text touchText;
+    [SerializeField] Text bestText;
+    [SerializeField] Text bestTexts;
     [SerializeField] Fish fish;
     [SerializeField] GameObject Pipes;
     [SerializeField] GameObject startLogo;
+    [SerializeField] GameObject bestObject;
     [SerializeField] OverPopupManager overPopup;
 
     int score;
+    string ScoreK = "BestScore";
 
     State state;
     enum State
@@ -23,9 +27,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Load();
+
         overPopup = overPopup.GetComponent<OverPopupManager>();
+        bestText = bestText.GetComponent<Text>();
         state = State.READY;
-        
+
         fish.SetKinematic(true);
         Pipes.SetActive(false);
         scoreText.gameObject.SetActive(false);
@@ -39,7 +46,15 @@ public class GameManager : MonoBehaviour
                 if (Input.GetButtonDown("Fire1")) GameStart();
                 break;
             case State.PLAY:
-                if (fish.IsDead) GameOver();
+                if (fish.IsDead)
+                {
+                    if (score > int.Parse(bestText.text))
+                    {
+                        Save();
+                    }
+                    Load();
+                    GameOver();
+                }
                 break;
             case State.OVER:
                 break;
@@ -55,12 +70,12 @@ public class GameManager : MonoBehaviour
         startLogo.SetActive(false);
         touchText.gameObject.SetActive(false);
         scoreText.gameObject.SetActive(true);
+        bestObject.SetActive(false);
     }
 
     void GameOver()
     {
         state = State.OVER;
-
         overPopup.Open();
 
         ScrollObject[] scrollObjects = GameObject.FindObjectsOfType<ScrollObject>();
@@ -75,5 +90,16 @@ public class GameManager : MonoBehaviour
     {
         score++;
         scoreText.text = score.ToString();
+    }
+
+    public void Save()
+    {
+         PlayerPrefs.SetInt(ScoreK, score);
+    }
+
+    public void Load()
+    {
+        bestText.text = PlayerPrefs.GetInt(ScoreK).ToString();
+        bestTexts.text = PlayerPrefs.GetInt(ScoreK).ToString();
     }
 }
