@@ -7,8 +7,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] Text scoreText;
+    [SerializeField] Text touchText;
     [SerializeField] Fish fish;
     [SerializeField] GameObject Pipes;
+    [SerializeField] GameObject startLogo;
+    [SerializeField] OverPopupManager overPopup;
 
     int score;
 
@@ -20,10 +23,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        overPopup = overPopup.GetComponent<OverPopupManager>();
         state = State.READY;
         
         fish.SetKinematic(true);
         Pipes.SetActive(false);
+        scoreText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -37,7 +42,6 @@ public class GameManager : MonoBehaviour
                 if (fish.IsDead) GameOver();
                 break;
             case State.OVER:
-                if (Input.GetButtonDown("Fire1")) SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 break;
         }
     }
@@ -48,11 +52,17 @@ public class GameManager : MonoBehaviour
 
         fish.SetKinematic(false);
         Pipes.SetActive(true);
+        startLogo.SetActive(false);
+        touchText.gameObject.SetActive(false);
+        scoreText.gameObject.SetActive(true);
     }
 
     void GameOver()
     {
         state = State.OVER;
+
+        overPopup.Open();
+
         ScrollObject[] scrollObjects = GameObject.FindObjectsOfType<ScrollObject>();
 
         foreach (ScrollObject scrollObject in scrollObjects)
