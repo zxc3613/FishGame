@@ -31,11 +31,8 @@ public class GameManager : MonoBehaviour
 
         overPopup = overPopup.GetComponent<OverPopupManager>();
         bestText = bestText.GetComponent<Text>();
-        state = State.READY;
-
-        fish.SetKinematic(true);
-        Pipes.SetActive(false);
-        scoreText.gameObject.SetActive(false);
+        GameReady();
+ 
     }
 
     private void Update()
@@ -60,7 +57,14 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+    void GameReady()
+    {
+        state = State.READY;
 
+        fish.SetKinematic(true);
+        Pipes.SetActive(false);
+        scoreText.gameObject.SetActive(false);
+    }
     void GameStart()
     {
         state = State.PLAY;
